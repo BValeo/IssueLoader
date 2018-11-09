@@ -1,3 +1,10 @@
 <resources>
     <string name="app_name">IssueLoader</string>
+    <string name="et_mes">Enter repository name…</string>
+    <string name="no_data">Issues not found.</string>
+    <string name="not_found">Repository not found.</string>
+    <string name="empty_string" />
+    <string name="internet_error">Check your internet connection.</string>
+    <string name="open">Open</string>
+    <string name="closed">Closed</string>
 </resources>
