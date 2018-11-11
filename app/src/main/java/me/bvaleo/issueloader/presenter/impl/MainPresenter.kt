@@ -12,21 +12,30 @@ import me.bvaleo.issueloader.view.IMainView
 
 class MainPresenter : IMainPresenter, ChangeTextCallback {
     override val uiState: ObservableField<UIState> = ObservableField(Default)
-    private val liveData = MutableLiveData<List<Issue>>()
+    private var liveData: MutableLiveData<List<Issue>>? = null
 
-    private val repository = IssueRepository(liveData, uiState)
-    private lateinit var mView: IMainView
+    private var repository: IssueRepository? = null
+    private var mView: IMainView? = null
 
 
     override fun attachView(view: IMainView) {
         mView = view
-        mView.setWatcher()
-        liveData.observe(view as LifecycleOwner, Observer { it?.let { mView.setData(it) } })
+        mView!!.setWatcher()
+
+        if(liveData == null) {
+            liveData = MutableLiveData()
+            liveData?.observe(view as LifecycleOwner, Observer { it?.let { mView!!.setData(it) } })
+            repository = IssueRepository(liveData!!, uiState)
+        }
+
     }
 
     override fun detachView() {
-        mView.removeWatcher()
-        repository.dispose()
+        mView?.removeWatcher()
+        repository?.dispose()
+
+        mView = null
+        repository = null
     }
 
     override fun onTextChanged(repo: String) {
@@ -39,6 +48,6 @@ class MainPresenter : IMainPresenter, ChangeTextCallback {
 
     private fun loadIssue(repo: String) {
         uiState.set(Loading)
-        repository.getIssueFromRepo(repo)
+        repository?.getIssueFromRepo(repo)
     }
 }
