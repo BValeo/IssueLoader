@@ -14,4 +14,4 @@ object NoData : UIState()
 
 object NotFound : UIState()
 
-class Error(@StringRes val errorMsigId: Int = 0) : UIState()
+class Error(@StringRes val errorMsgId: Int = 0) : UIState()

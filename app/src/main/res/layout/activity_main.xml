@@ -7,8 +7,8 @@
     <data>
 
         <variable
-            name="presenter"
-            type="me.bvaleo.issueloader.presenter.impl.MainPresenter" />
+            name="state"
+            type="android.databinding.ObservableField&lt;me.bvaleo.issueloader.util.UIState>" />
 
         <import type="android.view.View"/>
 
@@ -27,7 +27,7 @@
             android:layout_marginTop="24dp"
             android:layout_marginEnd="8dp"
             android:layout_marginBottom="8dp"
-            app:uiState="@{presenter.uiState}"
+            app:uiState="@{state}"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -56,7 +56,7 @@
             android:layout_marginEnd="8dp"
             android:layout_marginBottom="8dp"
             android:visibility="gone"
-            app:uiState="@{presenter.uiState}"
+            app:uiState="@{state}"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -72,7 +72,7 @@
             android:layout_marginEnd="8dp"
             android:layout_marginBottom="8dp"
             android:text="@string/app_name"
-            app:uiState="@{presenter.uiState}"
+            app:uiState="@{state}"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"

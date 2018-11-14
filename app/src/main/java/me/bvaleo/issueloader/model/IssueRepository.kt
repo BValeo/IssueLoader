@@ -1,23 +1,23 @@
 package me.bvaleo.issueloader.model
 
 import android.arch.lifecycle.MutableLiveData
-import android.databinding.ObservableField
-import android.util.Log
-import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
-import me.bvaleo.issueloader.R
 import me.bvaleo.issueloader.network.ApiProvider
-import me.bvaleo.issueloader.util.*
+import me.bvaleo.issueloader.presenter.impl.MainPresenter.Constants.DATA_NOT_FOUND
+import me.bvaleo.issueloader.presenter.impl.MainPresenter.Constants.HAS_DATA
+import me.bvaleo.issueloader.presenter.impl.MainPresenter.Constants.INTERNET_ERROR
 import java.util.concurrent.TimeUnit
 
-class IssueRepository(private val liveData: MutableLiveData<List<Issue>>, private val uiState: ObservableField<UIState>) {
+class IssueRepository(private val liveData: MutableLiveData<Pair<String, List<Issue>>>) {
 
     private companion object {
         const val TIMEOUT = "timeout"
         const val NOT_FOUND = "404"
         const val UNABLE_HOST = "Unable to resolve host"
+
+        val empty_list = listOf<Issue>()
     }
 
     private var mService = ApiProvider.getService()
@@ -29,26 +29,13 @@ class IssueRepository(private val liveData: MutableLiveData<List<Issue>>, privat
                 mService.getIssues(path)
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribeOn(Schedulers.io())
-                        .repeatWhen { objectObservable -> objectObservable.delay(10, TimeUnit.SECONDS) }
+                        .repeatWhen { d -> d.delay(10, TimeUnit.SECONDS) }
                         .subscribe(
-                                {
-                                    if (it.isEmpty()) {
-                                        uiState.set(NoData)
-                                    } else {
-                                        Log.d("getDataIssues", "Call this method")
-                                        liveData.value = it.filter { checkIssue(it) }
-                                        uiState.set(HasData)
-                                    }
-                                },
+                                { liveData.value = HAS_DATA to it.filter { checkIssue(it) } },
                                 {
                                     it.message?.let {
-                                        Log.d("getIssue", it)
-                                        if (it.contains(TIMEOUT) || it.contains(UNABLE_HOST)) {
-                                            uiState.set(Error(R.string.internet_error))
-                                            Log.d("getIssue", it)
-                                        }
-                                        if (it.contains(NOT_FOUND))
-                                            uiState.set(NotFound)
+                                        if (it.contains(TIMEOUT) || it.contains(UNABLE_HOST)) liveData.value = INTERNET_ERROR to empty_list
+                                        if (it.contains(NOT_FOUND)) liveData.value = DATA_NOT_FOUND to empty_list
                                     }
                                 }
                         )

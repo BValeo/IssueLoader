@@ -27,7 +27,7 @@ fun onDataMessage(view: TextView, uiState: UIState) {
     val state = when(uiState) {
         NoData -> View.VISIBLE to view.context.getString(R.string.no_data)
         NotFound -> View.VISIBLE to view.context.getString(R.string.not_found)
-        is Error -> View.VISIBLE to view.context.getString((uiState).errorMsigId)
+        is Error -> View.VISIBLE to view.context.getString((uiState).errorMsgId)
         else -> View.GONE to view.context.getString(R.string.empty_string)
     }
 
