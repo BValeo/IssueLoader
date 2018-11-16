@@ -1,5 +1,6 @@
 package me.bvaleo.issueloader.network
 
+import io.reactivex.schedulers.Schedulers
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
@@ -18,18 +19,16 @@ object ApiProvider {
 
     }
 
+    private val retrofit = Retrofit.Builder()
+            .baseUrl(BASE_URL)
+            .client(client)
+            .addConverterFactory(GsonConverterFactory.create())
+            .addCallAdapterFactory(RxJava2CallAdapterFactory.createWithScheduler(Schedulers.io()))
+            .build()
 
     private val apiService by lazy {
-        val retrofit = Retrofit.Builder()
-                .baseUrl(BASE_URL)
-                .client(client)
-                .addConverterFactory(GsonConverterFactory.create())
-                .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
-                .build()
-
-        return@lazy retrofit.create(ApiService::class.java)
+        retrofit.create(ApiService::class.java)
     }
 
-
-    fun getService() = apiService
+    fun getService() : ApiService = apiService
 }
