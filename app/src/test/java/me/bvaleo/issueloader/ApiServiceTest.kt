@@ -16,6 +16,7 @@ class ApiServiceTest {
         val schedulers = RxImmediateSchedulerRule()
 
         const val testQueryEmpty = ""
+        const val testFakeQuery = "repo"
         const val testQuery = "fetch"
     }
 
@@ -34,7 +35,17 @@ class ApiServiceTest {
 
         tester.assertComplete()
         tester.assertNoErrors()
+        tester.assertNoTimeout()
         tester.assertValue{t: List<Issue> ->  t.size == 30}
+    }
+
+    @Test
+    fun testFakeDataError() {
+        val tester = ApiProvider.getService().getIssues(testFakeQuery).test()
+
+        tester.assertError(HttpException::class.java)
+        tester.assertNoValues()
+        tester.assertNotComplete()
     }
 
 

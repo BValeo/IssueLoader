@@ -1,6 +1,7 @@
 package me.bvaleo.issueloader.model
 
 import android.arch.lifecycle.MutableLiveData
+import android.util.Log
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
@@ -34,6 +35,7 @@ class IssueRepository(private val mService: ApiService) {
                                 {
                                     callback.value = HAS_DATA to it.filter { issue -> checkIssue(issue) } },
                                 {
+                                    Log.e("ErrorLoadIssue", it.message, it)
                                     it.message?.let { msg ->
                                         if (msg.contains(TIMEOUT) || msg.contains(UNABLE_HOST)) callback.value = INTERNET_ERROR to empty_list
                                         if (msg.contains(NOT_FOUND)) callback.value = DATA_NOT_FOUND to empty_list
