@@ -27,6 +27,8 @@ class MainActivity : AppCompatActivity(), IMainView, ChangeTextCallback {
     private lateinit var bind: ActivityMainBinding
     private lateinit var mAdapter: IssueAdapter
 
+    private var mSnackbar: Snackbar? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -50,6 +52,7 @@ class MainActivity : AppCompatActivity(), IMainView, ChangeTextCallback {
             etRepo.addTextChangedListener(EditTextListener(bind.etRepo, this@MainActivity))
         }
 
+
         mPresenter.attachView(this)
     }
 
@@ -69,18 +72,18 @@ class MainActivity : AppCompatActivity(), IMainView, ChangeTextCallback {
     override fun onFetchDataError(error_msg: Int) {
         uiState.set(Error(error_msg))
 
-        if(error_msg == R.string.internet_error)
-            Snackbar.make(bind.root, "", Snackbar.LENGTH_INDEFINITE)
+        if (error_msg == R.string.internet_error)
+            mSnackbar = Snackbar.make(bind.root, getString(R.string.empty_string), Snackbar.LENGTH_INDEFINITE)
                     .setAction("Retry") {
                         mPresenter.loadIssue(bind.etRepo.text.toString())
-                    }
-                    .show()
-        if(error_msg == R.string.not_found && bind.etRepo.text.isEmpty())
+                    }.apply { show() }
+        if (error_msg == R.string.not_found && bind.etRepo.text.isEmpty())
             setDefaultView()
     }
 
     override fun setDefaultView() {
         uiState.set(Default)
+        mSnackbar?.dismiss()
     }
 
     override fun onTextChanged(repo: String) {
